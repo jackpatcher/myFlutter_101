@@ -21,3 +21,19 @@ flutter pub add gsheets
 
 
 import 'package:gsheets/gsheets.dart';
+
+
+
+//config
+
+const credentials = r'''
+   __DETAIL__
+''';
+
+
+// url https://docs.google.com/spreadsheets/d/1PEH7Hy8Odi3vXcjbLJU5b5CjtrbOvIGca8y2fiFNnEw/edit#gid=1938387779
+
+const String sheetId = '   __DETAIL__';
+const String worksheetTitle ='__DETAIL__';
+
+
