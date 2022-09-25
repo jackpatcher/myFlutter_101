@@ -37,3 +37,13 @@ const String sheetId = '   __DETAIL__';
 const String worksheetTitle ='__DETAIL__';
 
 
+echo "/gsheet2/lib/config/*" > .gitignore
+git init
+git add .
+git commit -m firstCommit
+
+ git branch -M gsheet2     
+ git remote add origin https://github.com/jackpatcher/myFlutter_101.git
+ git push -u origin gsheet2
+
+
