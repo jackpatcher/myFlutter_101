@@ -1,4 +1,4 @@
-# flutter_api1
+# flutter_api2
 
 A new Flutter project.
 
@@ -14,3 +14,10 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+#git init
+#git add .
+#git commit -m "ดึงข้อูลstdได้แล้วเย้2"
+#git branch -M flutterApi2  
+#git remote add oct622022 https://github.com/jackpatcher/myFlutter_101.git
+#git push -u oct622022 flutterApi2    
