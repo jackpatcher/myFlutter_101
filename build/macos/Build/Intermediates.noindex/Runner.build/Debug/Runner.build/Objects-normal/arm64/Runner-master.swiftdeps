@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.6 (swiftlang-5.6.0.323.62 clang-1316.0.20.8)"
+options: "9a1a92567da5ba281853eeb8aa848932366c22d4c906cd6a3183548b7eafb970"
+build_start_time: [1665030740, 223549842]
+build_end_time: [1665030740, 547769069]
+inputs:
+  "/Users/ampmini/MyGit_Dev/Learn/myFlutter_101/flutter_api/flutter_api1/macos/Flutter/GeneratedPluginRegistrant.swift": [1665030731, 86742401]
+  "/Users/ampmini/MyGit_Dev/Learn/myFlutter_101/flutter_api/flutter_api1/macos/Runner/AppDelegate.swift": [1663169498, 0]
+  "/Users/ampmini/MyGit_Dev/Learn/myFlutter_101/flutter_api/flutter_api1/macos/Runner/MainFlutterWindow.swift": [1663169498, 0]

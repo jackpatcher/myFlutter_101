@@ -1,73 +1,75 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_api1/model_std.dart';
+import 'package:flutter_api1/secret/config.dart' as cf;
 
-/**
- * https://docs.google.com/spreadsheets/d/1bxbwoHlIrg6i99zWseb-CIJ7YfNR5bDdNmsqKFPLa10/edit#gid=0 script
- */
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-Future<Album> fetchAlbum() async {
-  final response = await http
-      .get(Uri.parse('https://script.google.com/a/macros/smv.ac.th/s/AKfycbwaCoL5P--w9ftxhNLFMK8oJchtwWyeCBuIgip6M4GO20DVJ7tCqdNXsBFuEOLqLJ7y8w/exec?e=dfdf'));
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-
-    print(jsonDecode(response.body)[1]);
-     
-    return Album.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load album');
-  }
-}
-
-class Album {
-  final String userId;
-  final String id;
-  final String title;
-
-  const Album({
-    required this.userId,
-    required this.id,
-    required this.title,
-  });
-
- 
-  factory Album.fromJson( Map<String, dynamic>   json) {
-    
-
-    return Album(
-      userId: json['stdId'],
-      id: json['firstName'],
-      title: json['lastName'],
-    );
-  }
-} 
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+ 
+
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
-  late Future<Album> futureAlbum; 
+class _MyAppState extends State<MyApp> {  
+   List<dynamic>   data = [];
+   
+      
+   Future  <List<dynamic>>   _getStd()   async {
 
-  @override
-  void initState() {
-    super.initState();
-    futureAlbum = fetchAlbum();
-  }
+     var client = http.Client();
+     
+      var url = cf.apiExe;
+       
+ 
+ 
+     try {
+
+        var  res =  await http.get(Uri.parse(url));
+         data.clear();
+        var json = jsonDecode(res.body );
+
+        for(var i in json){
+          data.add( Std.fromJsonMap(i));
+        }
+
+       
+     } catch (e){
+        print(e);
+
+     }
+     finally{
+      client.close();
+     }
+      
+ 
+
+    
+ 
+     return  data;
+    }
+
+   @override
+      void initState(){
+      super.initState();
+
+       _getStd();
+
+    }
+
 
   @override
   Widget build(BuildContext context) {
+
+
+    
     return MaterialApp(
       title: 'Fetch Data Example',
       theme: ThemeData(
@@ -77,22 +79,37 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Fetch Data Example'),
         ),
-        body: Center(
-          child: FutureBuilder<Album>(
-            future: futureAlbum,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.title.toString());
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
+        body: FutureBuilder (
+          future: _getStd(),
+          builder: (context, snapshot) {
+
+            if(!snapshot.hasData) {
+              return(const Center(child: CircularProgressIndicator(),));
+            }
+            else{      
+             return  ListView.builder(
+              itemCount: data.length,
+               itemBuilder: (context,index) { 
+
+                final item = snapshot.data![index];
+
+                 return ListTile(
+                  title: Text(item.firstName)
+                 );
+                  
+           
               }
 
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          ),
-        ),
+    
+             );
+            }
+            }
+            )
+
       ),
     );
   }
+  
+
 }
+
