@@ -4,18 +4,21 @@ class Std {
   String startName;
   String firstName;
   String lastName;
+  String stdNo;
   String classLv;
   String room;
   String imgUrl;
   String tel;
   
  
-  Std.fromJsonMap(Map<String, dynamic> map):
+  Std.fromJsonMap(Map<String, dynamic> map)
+  :
     userRegId = map["userRegId"],
     stdId = map["stdId"],
     startName = map["startName"],
     firstName = map['firstName'],
     lastName = map['lastName'],
+    stdNo = map['stdNo'],
     classLv = map['classLv'],
     room = map['room'],
     imgUrl = map['imgUrl'],
@@ -29,7 +32,8 @@ class Std {
     data["startName"] = startName;
     data["firstName"] = firstName;
     data["lastName"] = lastName;
-    data["classLv "] = classLv;
+    data["stdNo"] = stdNo;
+    data["classLv"] = classLv;
     data["room"] = room;
     data["imgUrl"] = imgUrl;
     data["tel"] = tel;
