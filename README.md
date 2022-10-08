@@ -20,5 +20,5 @@ samples, guidance on mobile development, and a full API reference.
 ### git add .
 ### git commit -m "ดึงข้อูลstdได้แล้วเย้2"
 ### git branch -M flutterApi2  
-### git remote add oct622022 https://github.com/jackpatcher/myFlutter_101.git
-### git push -u oct622022 flutterApi2    
+### git remote add oct642022 https://github.com/jackpatcher/myFlutter_101.git
+### git push -u oct642022 flutterApi2    
