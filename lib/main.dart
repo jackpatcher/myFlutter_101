@@ -1,10 +1,10 @@
-import 'dart:ui';
-
-import 'app/config/routes/app_pages.dart';
-import 'app/config/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:get/get.dart';
+import 'sys/config/routes/app_pages.dart';
+import 'sys/config/themes/app_theme.dart';
 
+ 
 void main() {
   runApp(const MyApp());
 }
@@ -15,12 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Daily Task',
-      theme: AppTheme.basic,
+      title: 'Dinsor School OS',
+      theme: AppTheme.initTheme,
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
       scrollBehavior: CustomScrollBehaviour(),
+      
       debugShowCheckedModeBanner: false,
+      
     );
   }
 }

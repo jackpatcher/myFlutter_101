@@ -1,6 +1,6 @@
 {
-    "name": "daily_task",
-    "short_name": "daily_task",
+    "name": "Dinsor School OS",
+    "short_name": "Dinsor School OS",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

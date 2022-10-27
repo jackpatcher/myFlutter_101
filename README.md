@@ -15,6 +15,8 @@ ready for Web or Mobile
 
 
 
+#config
+flutter packages get
 
 
 **Dependencies:**
