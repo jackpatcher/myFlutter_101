@@ -39,26 +39,34 @@ class _HomeScreenState extends State<HomeScreen> {
 // [SliverAppBar]s are typically used in [CustomScrollView.slivers], which in
 // turn can be placed in a [Scaffold.body].
 
-  int _selectedIndex = 0;
   List<bool> isHilight = [false, false, false, false];
 
-   Map<String,dynamic> a =  {"size":0.1};
-    
-    
- 
-  
+  Map<String, dynamic> myLocalList = {
+    "size": 0.0,
+    "isMobile": false,
+    "sizeOf_Mobile": 600,
+    "sizeOf_Desktop": 1100,
+  };
+  int _selectedIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     isHilight[_selectedIndex] = true;
 
-    setState(() {
-       a["size"] = MediaQuery.of(context).size.width;
-      
-    });
-    
+    myLocalList["size"] = MediaQuery.of(context).size.width;
 
-    final isMobile = MediaQuery.of(context).size.width < 900;
+    myLocalList["isMobile"] =
+        MediaQuery.of(context).size.width < myLocalList["sizeOf_Mobile"];
+    myLocalList["isTablet"] =
+        MediaQuery.of(context).size.width < myLocalList["sizeOf_Desktop"] &&
+            MediaQuery.of(context).size.width >= myLocalList["sizeOf_Mobile"];
+    myLocalList["isDesktop"] =
+        MediaQuery.of(context).size.width >= myLocalList["sizeOf_Desktop"];
+
     //final isTablet = MediaQuery.of(context).size.shortestSide < 768;
     return Scaffold(
       appBar: AppBar(
@@ -67,60 +75,118 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.person), onPressed: () {}),
         ],
       ),
-      body: _mainLayout(isMobile,a),
+      body: _mainLayout(myLocalList),
+      bottomNavigationBar:
+          !myLocalList["isMobile"] ? _genMobileBottomNav() : Container(),
     );
   }
 
-  Widget _mainLayout(isMobile,a) {
+  Widget _mainLayout(myLocalList) {
     return Row(children: [
-      isMobile ? _buildNavigationRail() : _buildSideBar(),
-      Expanded(child: _buildHomeContentBody(a))
+      _genNavLayoutByScreenSize(),
+      Expanded(child: _buildHomeContentBody())
     ]);
   }
 
-  Widget _buildSideBar() {
+  Widget _genNavLayoutByScreenSize() {
+    Widget myWidget = Container();
+    if (myLocalList["isTablet"]) {
+      myWidget = _buildTabletNavigationRail();
+    } else if (myLocalList["isDesktop"]) {
+      myWidget = _buildDesktopSideBar();
+    } else if (myLocalList["Tablet"]) {
+      myWidget = Container();
+    }
+
+    return myWidget;
+  }
+
+  Widget _buildDesktopSideBar() {
     return Drawer(
       width: 200,
-      child: ListView.builder(
-        itemCount: NavigationListItems.length,
-        itemBuilder: (context, index) => GestureDetector(
-          child: Container(
-            color: isHilight[index] ? Colors.blue : Colors.white,
-            child: ListTile(
-              leading: Icon(NavigationListItems[index].icon),
-              title: Text(NavigationListItems[index].label),
-              selected: _selectedIndex == index,
-              selectedColor: Colors.white,
-              onTap: () {
-                setState(() {
-                  _selectedIndex = index;
-                });
-
-                isHilight.asMap().entries.map(
-                  (e) {
-                    if (e.key == index) {
-                      setState(() {
-                        isHilight[e.key] = true;
-                      });
-                    } else {
-                      setState(() {
-                      isHilight[e.key] = false;
-                       });
-
-                    }
-                  },
-                );
-
-                
-              },
-            ),
-          ),
-        ),
+      child: ListView(
+        padding: const EdgeInsets.all(0.0),
+        children: _genNavSideBarList(),
       ),
     );
   }
 
-  Widget  _buildHomeContentBody(a) {
+  Widget _genMobileBottomNav() {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+          backgroundColor: Colors.red,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.business),
+          label: 'Business',
+          backgroundColor: Colors.green,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.school),
+          label: 'School',
+          backgroundColor: Colors.purple,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Settings',
+          backgroundColor: Colors.pink,
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      onTap: (index) => changeTab(index),
+    );
+  }
+
+  List<Widget> _genNavSideBarList() {
+    List<Widget> myList = [];
+    for (int index = 0; index < NavigationListItems.length; index++) {
+      myList.add(Container(
+        color: isHilight[index] ? Colors.blue : Colors.white,
+        child: ListTile(
+          leading: Icon(NavigationListItems[index].icon),
+          title: Text(NavigationListItems[index].label),
+          selected: _selectedIndex == index,
+          selectedColor: Colors.white,
+          onTap: () {
+            debugPrint("Tab $index");
+            setState(() {
+              _selectedIndex = index;
+            });
+
+            isHilight.asMap().entries.map(
+              (e) {
+                if (e.key == index) {
+                  setState(() {
+                    isHilight[e.key] = true;
+                  });
+                } else {
+                  setState(() {
+                    isHilight[e.key] = false;
+                  });
+                }
+              },
+            );
+          },
+        ),
+      ));
+    }
+
+    myList.add(Divider());
+
+    return myList;
+  }
+
+  //https://stackoverflow.com/questions/50961158/how-to-programmatically-select-bottomnavigationbar-tab-in-flutter-instead-of-bui
+  void changeTab(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  Widget _buildHomeContentBody() {
     return CustomScrollView(
       slivers: <Widget>[
         const SliverAppBar(
@@ -136,19 +202,20 @@ class _HomeScreenState extends State<HomeScreen> {
             background: FlutterLogo(),
           ),
         ),
-         SliverToBoxAdapter(
+        SliverToBoxAdapter(
           child: SizedBox(
             height: 20,
             child: Center(
-              child: Text(' ความกว้าง ${a ['size']}' ),
+              child: Text(' ความกว้าง ${myLocalList['size']}'),
             ),
           ),
         ),
-        const SliverToBoxAdapter(
+        SliverToBoxAdapter(
           child: SizedBox(
             height: 20,
             child: Center(
-              child: Text('ข้อมูลคั่นบางๆ'),
+              child: Text(
+                  ' Mobile: ${myLocalList['isMobile']} Tablet:${myLocalList['isTablet']} Desktop : ${myLocalList['isDesktop']}'),
             ),
           ),
         ),
@@ -170,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNavigationRail() {
+  Widget _buildTabletNavigationRail() {
     var groupAligment = -1.0;
     var labelType = NavigationRailLabelType.selected;
     var showLeading = false;
@@ -185,23 +252,8 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       },
       labelType: labelType,
-      leading: showLeading
-          ? FloatingActionButton(
-              elevation: 0,
-              onPressed: () {
-                // Add your onPressed code here!
-              },
-              child: const Icon(Icons.add),
-            )
-          : const SizedBox(),
-      trailing: showTrailing
-          ? IconButton(
-              onPressed: () {
-                // Add your onPressed code here!
-              },
-              icon: const Icon(Icons.more_horiz_rounded),
-            )
-          : const SizedBox(),
+      leading: const SizedBox(),
+      trailing: const SizedBox(),
       destinations: List<NavigationRailDestination>.generate(
           NavigationListItems.length,
           (index) => NavigationRailDestination(
@@ -229,6 +281,7 @@ class Navigationlist {
       required this.label});
 }
 
+// ignore: non_constant_identifier_names
 List<Navigationlist> NavigationListItems = [
   Navigationlist(
       icon: Icons.home_outlined,
@@ -253,17 +306,21 @@ List<Navigationlist> NavigationListItems = [
 ];
 
 class Page1 extends StatelessWidget {
+  const Page1({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("page 1"),
+          title: const Text("page 1"),
         ),
-        body: Text("page 1"));
+        body: const Text("page 1"));
   }
 }
 
 class Page2 extends StatelessWidget {
+  const Page2({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
