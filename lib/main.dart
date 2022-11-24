@@ -44,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> myLocalList = {
     "size": 0.0,
     "isMobile": false,
+    "isTablet": false,
+    "isDesktop": false,
     "sizeOf_Mobile": 600,
     "sizeOf_Desktop": 1100,
   };
@@ -75,9 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.person), onPressed: () {}),
         ],
       ),
-      body: _mainLayout(myLocalList),
-      bottomNavigationBar:
-          !myLocalList["isMobile"] ? _genMobileBottomNav() : Container(),
+      body: _mainLayout(myLocalList), 
+      bottomNavigationBar:   _genMobileBottomNav() ,
     );
   }
 
@@ -94,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
       myWidget = _buildTabletNavigationRail();
     } else if (myLocalList["isDesktop"]) {
       myWidget = _buildDesktopSideBar();
-    } else if (myLocalList["Tablet"]) {
+    } else if (myLocalList["isMobile"]) {
       myWidget = Container();
     }
 
