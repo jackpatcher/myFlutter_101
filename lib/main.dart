@@ -39,7 +39,14 @@ class _HomeScreenState extends State<HomeScreen> {
 // [SliverAppBar]s are typically used in [CustomScrollView.slivers], which in
 // turn can be placed in a [Scaffold.body].
 
-  List<bool> isHilight = [false, false, false, false];
+  //List<bool> isHilight = [false, false, false, false];
+
+  List <Widget> _pages = <Widget>[
+    Text('Index 0 : Home',style: TextStyle(fontSize: 30),),
+    Text('Index 1 : Home',style: TextStyle(fontSize: 30),),
+    Text('Index 2 : Home',style: TextStyle(fontSize: 30),),
+     Text('Index 3 : Home',style: TextStyle(fontSize: 30),),
+  ];
 
   Map<String, dynamic> myLocalList = {
     "size": 0.0,
@@ -57,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    isHilight[_selectedIndex] = true;
+    //isHilight[_selectedIndex] = true;
 
     myLocalList["size"] = MediaQuery.of(context).size.width;
 
@@ -85,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _mainLayout(myLocalList) {
     return Row(children: [
       _genNavLayoutByScreenSize(),
-      Expanded(child: _buildHomeContentBody())
+      Expanded(child: _buildHomeContentBody( _pages.elementAt(_selectedIndex)))
     ]);
   }
 
@@ -143,39 +150,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _genNavSideBarList() {
     List<Widget> myList = [];
+
     for (int index = 0; index < NavigationListItems.length; index++) {
       myList.add(Container(
-        color: isHilight[index] ? Colors.blue : Colors.white,
+        color:   Colors.white,
         child: ListTile(
-          leading: Icon(NavigationListItems[index].icon),
+          leading: _selectedIndex == index ? Icon(NavigationListItems[index].activeIcon) : Icon(NavigationListItems[index].icon),
           title: Text(NavigationListItems[index].label),
           selected: _selectedIndex == index,
-          selectedColor: Colors.white,
+          selectedColor: Colors.blue,
           onTap: () {
             debugPrint("Tab $index");
+            
             setState(() {
               _selectedIndex = index;
             });
 
-            isHilight.asMap().entries.map(
-              (e) {
-                if (e.key == index) {
-                  setState(() {
-                    isHilight[e.key] = true;
-                  });
-                } else {
-                  setState(() {
-                    isHilight[e.key] = false;
-                  });
-                }
-              },
-            );
           },
         ),
       ));
     }
 
-    myList.add(Divider());
+    myList.add(const Divider());
 
     return myList;
   }
@@ -187,22 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget _buildHomeContentBody() {
-    return CustomScrollView(
+ 
+ Widget sampleContent(){
+  return CustomScrollView(
       slivers: <Widget>[
-        const SliverAppBar(
-          pinned: true,
-          snap: false,
-          floating: false,
-          expandedHeight: 160.0,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text('A001 การมาโรงเรียน', textAlign: TextAlign.left),
-            ),
-            background: FlutterLogo(),
-          ),
-        ),
         SliverToBoxAdapter(
           child: SizedBox(
             height: 20,
@@ -231,12 +215,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
-            childCount: 20,
+            childCount: 50,
           ),
         ),
       ],
     );
-  }
+ }
+
+Widget home(){
+  return const Text("HOME");
+}
+Widget page1(){
+  return const Text("Page1");
+}
+
+Widget page2(){
+  return const Text("Page2");
+}
+
+Widget page3(){
+  return const Text("Page3");
+}
+
+
+Widget _buildHomeContentBody(contentWidget) {
+    return contentWidget;
+}
+
 
   Widget _buildTabletNavigationRail() {
     var groupAligment = -1.0;
