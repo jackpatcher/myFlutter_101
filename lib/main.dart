@@ -1,30 +1,91 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:a001/screen.dart';
+import 'package:a001/navBar.dart';
+import 'package:a001/model.dart';
+ 
 
 // ต่อ https://github.com/jackpatcher/myFlutter_101/blob/my1stResponsive1/lib/sys/_left/b_menu_select.dart
 
 void main() =>
-    runApp(DevicePreview(enabled: false, builder: (contex) => const A001App()));
+    runApp(DevicePreview(enabled: false, builder: (contex) =>  A001App()));
 
 class A001App extends StatelessWidget {
-  const A001App({super.key});
+   A001App({super.key});
+
+    // private navigators
+  final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "A001 App",
+ 
+
+    final goRouter = GoRouter(
+      initialLocation: '/a',
+      navigatorKey: _rootNavigatorKey,
+      debugLogDiagnostics: true,
+      routes: [
+        ShellRoute(
+          navigatorKey: _shellNavigatorKey,
+          builder: (context, state, child) {
+            return ScaffoldWithBottomNavBar(tabs: tabs, child: child);
+          },
+          routes: [
+            // Products
+            GoRoute(
+              path: '/a',
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const RootScreen(label: 'A', detailsPath: '/a/details'),
+              ),
+              routes: [
+                GoRoute(
+                  path: 'details',
+                  builder: (context, state) => const DetailsScreen(label: 'A'),
+                ),
+              ],
+            ),
+            // Shopping Cart
+            GoRoute(
+              path: '/b',
+              pageBuilder: (context, state) => NoTransitionPage(
+                key: state.pageKey,
+                child: const RootScreen(label: 'B', detailsPath: '/b/details'),
+              ),
+              routes: [
+                GoRoute(
+                  path: 'details',
+                  builder: (context, state) => const DetailsScreen(label: 'B'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+
+    // return MaterialApp(
+    //   title: "A001 App",
+    //   debugShowCheckedModeBanner: false,
+    //   theme: ThemeData(
+    //     primarySwatch: Colors.blue,
+    //   ),
+    //   initialRoute: '/',
+    //   routes: {
+    //     '/':  (context) =>  HomeScreen( wg: const Page1() ),
+    //     Page1.id :  (context) => HomeScreen( wg: const Page1() ) ,
+    //     Page2.id:  (context) => HomeScreen( wg: const Page2() ) ,
+    //     Page3.id:  (context) => HomeScreen( wg: const Page3() ),
+    //     Page4.id:  (context) => HomeScreen( wg: const Page4() ) ,
+    //   },
+    // );
+
+    return MaterialApp.router(
+      routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      initialRoute: '/',
-      routes: {
-        '/':  (context) =>  HomeScreen( wg: const Page1() ),
-        Page1.id :  (context) => HomeScreen( wg: const Page1() ) ,
-        Page2.id:  (context) => HomeScreen( wg: const Page2() ) ,
-        Page3.id:  (context) => HomeScreen( wg: const Page3() ),
-        Page4.id:  (context) => HomeScreen( wg: const Page4() ) ,
-      },
+      theme: ThemeData(primarySwatch: Colors.indigo),
     );
   }
 }
@@ -133,11 +194,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _genMobileBottomNav() {
 
      List   <BottomNavigationBarItem> myList = [];
-      for (int index = 0; index < NavigationListItems.length; index++) {
+      for (int index = 0; index < tabs.length; index++) {
       myList.add( BottomNavigationBarItem (
-        icon:   _selectedIndex == index ? Icon(NavigationListItems[index].activeIcon) : Icon(NavigationListItems[index].icon),
-        label: NavigationListItems[index].label,
-        backgroundColor:  NavigationListItems[index].color, 
+        icon:   _selectedIndex == index ? tabs[index].activeIcon : tabs[index].icon,
+        label: tabs[index].label,
+        backgroundColor:  tabs[index].color, 
       )); 
     }
     return BottomNavigationBar(items: myList,
@@ -150,12 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _genNavSideBarList() {
     List<Widget> myList = [];
 
-    for (int index = 0; index < NavigationListItems.length; index++) {
+    for (int index = 0; index < tabs.length; index++) {
       myList.add(Container(
         color:   Colors.white,
         child: ListTile(
-          leading: _selectedIndex == index ? Icon(NavigationListItems[index].activeIcon) : Icon(NavigationListItems[index].icon),
-          title: Text(NavigationListItems[index].label),
+          leading: _selectedIndex == index ? tabs[index].activeIcon : tabs[index].icon,
+          title: Text(tabs[index].label),
           selected: _selectedIndex == index,
           selectedColor: Colors.blue,
           onTap: () {
@@ -178,10 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   //https://stackoverflow.com/questions/50961158/how-to-programmatically-select-bottomnavigationbar-tab-in-flutter-instead-of-bui
   void changeTab(int index) {
-    Navigator.of(context).pushReplacementNamed(NavigationListItems[index].route);
+    Navigator.of(context).pushReplacementNamed(tabs[index].route);
 
-    // Navigator.pushNamed(context, NavigationListItems[index].route);
-     //Navigator.pushNamed(context,NavigationListItems[index].route);
+    // Navigator.pushNamed(context, tabs[index].route);
+     //Navigator.pushNamed(context,tabs[index].route);
      //Navigator.pushReplacement(context,MaterialPageRoute(builder: (BuildContext context) => Page1()));
     
     setState(() {
@@ -254,62 +315,21 @@ Widget _buildHomeContentBody(contentWidget) {
       leading: const SizedBox(),
       trailing: const SizedBox(),
       destinations: List<NavigationRailDestination>.generate(
-          NavigationListItems.length,(index) => NavigationRailDestination(
+          tabs.length,(index) => NavigationRailDestination(
                 icon: Tooltip(
-                  message: NavigationListItems[index].label,
-                  child: Icon(NavigationListItems[index].icon),
+                  message: tabs[index].label,
+                  child: tabs[index].icon,
                 ),
-                label: Text(NavigationListItems[index].label),
-                selectedIcon: Icon(NavigationListItems[index].activeIcon),
+                label: Text(tabs[index].label),
+                selectedIcon: tabs[index].activeIcon,
   
               )),
     );
   }
 }
 
-class Navigationlist {
-  final IconData icon;
-  final IconData activeIcon;
-  final String label;
-  final String route;
-  final Color color;
 
-  Navigationlist(
-      {required this.route,
-      required this.icon,
-      required this.activeIcon,
-      required this.label, 
-      required this.color,
-      });
-}
 
-// ignore: non_constant_identifier_names
-List<Navigationlist> NavigationListItems = [
-  Navigationlist(
-      icon: Icons.home_outlined,
-      activeIcon: Icons.home,
-      label: "หน้าแรก",
-      route: "/page1",
-      color:Colors.pink),
-  Navigationlist(
-      icon: Icons.favorite_border,
-      activeIcon: Icons.favorite,
-      label: "บันทึก",
-      route: "/page2",
-      color:Colors.blue), 
-  Navigationlist(
-      icon: Icons.bookmark_border,
-      activeIcon: Icons.book,
-      label: "ข้อมูล",
-      route: "/page3",
-      color:Colors.green), 
-  Navigationlist(
-      icon: Icons.star_border,
-      activeIcon: Icons.star,
-      label: "รายงาน",
-      route: "/page4",
-      color:Colors.grey), 
-];
 
 class Page1 extends StatelessWidget {
   const Page1({super.key});
