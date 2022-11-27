@@ -19,33 +19,44 @@ class A001App extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': ((context) => const HomeScreen()),
-        '/page1': ((context) => Page1()),
-        '/page2': ((context) => Page2()),
-        '/page3': ((context) => Page3()),
+        '/':  (context) =>  HomeScreen( wg: const Page1() ),
+        Page1.id :  (context) => HomeScreen( wg: const Page1() ) ,
+        Page2.id:  (context) => HomeScreen( wg: const Page2() ) ,
+        Page3.id:  (context) => HomeScreen( wg: const Page3() ),
+        Page4.id:  (context) => HomeScreen( wg: const Page4() ) ,
       },
     );
   }
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  Widget wg;
+
+    HomeScreen({
+    super.key,
+    required this.wg,
+    });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+   
+   
+  
 // [SliverAppBar]s are typically used in [CustomScrollView.slivers], which in
 // turn can be placed in a [Scaffold.body].
 
   //List<bool> isHilight = [false, false, false, false];
 
+
+
   List <Widget> _pages = <Widget>[
-    Text('Index 0 : Home',style: TextStyle(fontSize: 30),),
-    Text('Index 1 : Home',style: TextStyle(fontSize: 30),),
-    Text('Index 2 : Home',style: TextStyle(fontSize: 30),),
-     Text('Index 3 : Home',style: TextStyle(fontSize: 30),),
+    const Page1(),
+    const Page2(),
+    const Page3(),
+     const Text('Index 3 : Home',style: TextStyle(fontSize: 30),),
   ];
 
   Map<String, dynamic> myLocalList = {
@@ -84,15 +95,15 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(icon: const Icon(Icons.person), onPressed: () {}),
         ],
       ),
-      body: _mainLayout(myLocalList), 
+      body: _mainLayout(myLocalList ), 
       bottomNavigationBar:   _genMobileBottomNav() ,
     );
   }
 
-  Widget _mainLayout(myLocalList) {
+  Widget _mainLayout(myLocalList ) {
     return Row(children: [
       _genNavLayoutByScreenSize(),
-      Expanded(child: _buildHomeContentBody( _pages.elementAt(_selectedIndex)))
+      Expanded(child: _buildHomeContentBody( widget.wg)),
     ]);
   }
 
@@ -120,32 +131,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _genMobileBottomNav() {
-    return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-          backgroundColor: Colors.red,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.business),
-          label: 'Business',
-          backgroundColor: Colors.green,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.school),
-          label: 'School',
-          backgroundColor: Colors.purple,
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Settings',
-          backgroundColor: Colors.pink,
-        ),
-      ],
-      currentIndex: _selectedIndex,
-      onTap: (index) => changeTab(index),
-    );
+
+     List   <BottomNavigationBarItem> myList = [];
+      for (int index = 0; index < NavigationListItems.length; index++) {
+      myList.add( BottomNavigationBarItem (
+        icon:   _selectedIndex == index ? Icon(NavigationListItems[index].activeIcon) : Icon(NavigationListItems[index].icon),
+        label: NavigationListItems[index].label,
+        backgroundColor:  NavigationListItems[index].color, 
+      )); 
+    }
+    return BottomNavigationBar(items: myList,
+            currentIndex: _selectedIndex,
+            onTap: (index) => changeTab(index),
+            
+            );
   }
 
   List<Widget> _genNavSideBarList() {
@@ -160,6 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
           selected: _selectedIndex == index,
           selectedColor: Colors.blue,
           onTap: () {
+            
             debugPrint("Tab $index");
             
             setState(() {
@@ -178,6 +178,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   //https://stackoverflow.com/questions/50961158/how-to-programmatically-select-bottomnavigationbar-tab-in-flutter-instead-of-bui
   void changeTab(int index) {
+    Navigator.of(context).pushReplacementNamed(NavigationListItems[index].route);
+
+    // Navigator.pushNamed(context, NavigationListItems[index].route);
+     //Navigator.pushNamed(context,NavigationListItems[index].route);
+     //Navigator.pushReplacement(context,MaterialPageRoute(builder: (BuildContext context) => Page1()));
+    
     setState(() {
       _selectedIndex = index;
     });
@@ -222,20 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
  }
 
-Widget home(){
-  return const Text("HOME");
-}
-Widget page1(){
-  return const Text("Page1");
-}
-
-Widget page2(){
-  return const Text("Page2");
-}
-
-Widget page3(){
-  return const Text("Page3");
-}
+ 
 
 
 Widget _buildHomeContentBody(contentWidget) {
@@ -246,8 +239,7 @@ Widget _buildHomeContentBody(contentWidget) {
   Widget _buildTabletNavigationRail() {
     var groupAligment = -1.0;
     var labelType = NavigationRailLabelType.selected;
-    var showLeading = false;
-    var showTrailing = false;
+ 
 
     return NavigationRail(
       selectedIndex: _selectedIndex,
@@ -256,19 +248,20 @@ Widget _buildHomeContentBody(contentWidget) {
         setState(() {
           _selectedIndex = index;
         });
+
       },
       labelType: labelType,
       leading: const SizedBox(),
       trailing: const SizedBox(),
       destinations: List<NavigationRailDestination>.generate(
-          NavigationListItems.length,
-          (index) => NavigationRailDestination(
+          NavigationListItems.length,(index) => NavigationRailDestination(
                 icon: Tooltip(
                   message: NavigationListItems[index].label,
                   child: Icon(NavigationListItems[index].icon),
                 ),
                 label: Text(NavigationListItems[index].label),
                 selectedIcon: Icon(NavigationListItems[index].activeIcon),
+  
               )),
     );
   }
@@ -279,12 +272,15 @@ class Navigationlist {
   final IconData activeIcon;
   final String label;
   final String route;
+  final Color color;
 
   Navigationlist(
       {required this.route,
       required this.icon,
       required this.activeIcon,
-      required this.label});
+      required this.label, 
+      required this.color,
+      });
 }
 
 // ignore: non_constant_identifier_names
@@ -293,26 +289,33 @@ List<Navigationlist> NavigationListItems = [
       icon: Icons.home_outlined,
       activeIcon: Icons.home,
       label: "หน้าแรก",
-      route: "/"),
+      route: "/page1",
+      color:Colors.pink),
   Navigationlist(
       icon: Icons.favorite_border,
       activeIcon: Icons.favorite,
       label: "บันทึก",
-      route: "/page1"),
+      route: "/page2",
+      color:Colors.blue), 
   Navigationlist(
       icon: Icons.bookmark_border,
       activeIcon: Icons.book,
       label: "ข้อมูล",
-      route: "/page2"),
+      route: "/page3",
+      color:Colors.green), 
   Navigationlist(
       icon: Icons.star_border,
       activeIcon: Icons.star,
       label: "รายงาน",
-      route: "/page3"),
+      route: "/page4",
+      color:Colors.grey), 
 ];
 
 class Page1 extends StatelessWidget {
   const Page1({super.key});
+
+  static String id = "/page1";
+
 
   @override
   Widget build(BuildContext context) {
@@ -327,23 +330,50 @@ class Page1 extends StatelessWidget {
 class Page2 extends StatelessWidget {
   const Page2({super.key});
 
+  static String id = "/page2";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("page 2"),
+          title: const Text("page 2"),
         ),
-        body: Text("page 2"));
+        body: const Text("page 2"));
   }
 }
 
 class Page3 extends StatelessWidget {
+  const Page3({super.key});
+  static String id = "/page3";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("page 3"),
+          title: const Text("page 3"),
         ),
-        body: Text("page 3"));
+        body: const Text("page 3"));
+  }
+}
+
+class Page4 extends StatelessWidget {
+  const Page4({super.key});
+  static String id = "/page4";
+
+  
+
+
+
+  @override
+  Widget build(BuildContext context) {
+      //  setState(() {
+      //      _selectedIndex = 4;
+      //   });
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("page 4"),
+        ),
+        body: const Text("page 4"));
   }
 }

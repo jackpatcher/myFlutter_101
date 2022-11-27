@@ -20,5 +20,5 @@ samples, guidance on mobile development, and a full API reference.
 ## git add .
 ## git commit -m "firstInit"  
 ## git branch -M my4resp
-## git remote add nov242022 https://github.com/jackpatcher/myFlutter_101.git
-## git push -u nov242022  my4resp
+## git remote add nov252022 https://github.com/jackpatcher/myFlutter_101.git
+## git push -u nov252022  my4resp
