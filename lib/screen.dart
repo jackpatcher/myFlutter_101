@@ -1,42 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+ 
 /// Widget for the root/initial pages in the bottom navigation bar.
-class RootScreen extends StatelessWidget {
+class RootScreen extends StatefulWidget {
+
+
   /// Creates a RootScreen
-  const RootScreen({required this.label, required this.detailsPath, Key? key})
+  const RootScreen({required this.label, required this.detailsPath, Key? key, required this.index,})
       : super(key: key);
 
   /// The label
   final String label;
-
-  /// The path to the detail page
+  final int index;
+  /// The path to the detail pge
   final String detailsPath;
 
+ 
+
+  
+  @override
+  State<RootScreen>  createState() => _RootScreenState();
+
+}
+
+class _RootScreenState  extends State<RootScreen>{
+     
+ 
+   
   @override
   Widget build(BuildContext context) {
+  debugPrint("test2 - rooScreen tabIndex = ${widget.index}");
+
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tab root - $label'),
+        title: Text('Tab root - ${widget.label}'),
       ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Text('Screen $label',
+            Text('Screen  ${widget.label}',
                 style: Theme.of(context).textTheme.titleLarge),
             const Padding(padding: EdgeInsets.all(4)),
-            TextButton(
-              onPressed: () => context.go(detailsPath),
+            ElevatedButton(
+              onPressed: () => context.go(widget.detailsPath),
               child: const Text('View details'),
             ),
           ],
         ),
       ),
+     // bottomNavigationBar: ,
     );
   }
+
+
 }
 
+ 
 /// The details screen for either the A or B screen.
 class DetailsScreen extends StatefulWidget {
   /// Constructs a [DetailsScreen].
@@ -49,11 +71,11 @@ class DetailsScreen extends StatefulWidget {
   final String label;
 
   @override
-  State<StatefulWidget> createState() => DetailsScreenState();
+  State<DetailsScreen> createState() => _DetailsScreenState();
 }
 
 /// The state for DetailsScreen
-class DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends State<DetailsScreen> {
   int _counter = 0;
 
   @override
@@ -69,13 +91,13 @@ class DetailsScreenState extends State<DetailsScreen> {
             Text('Details for ${widget.label} - Counter: $_counter',
                 style: Theme.of(context).textTheme.titleLarge),
             const Padding(padding: EdgeInsets.all(4)),
-            TextButton(
+            ElevatedButton(
               onPressed: () {
                 setState(() {
                   _counter++;
                 });
               },
-              child: const Text('Increment counter'),
+              child: const Text('+'),
             ),
           ],
         ),
@@ -83,3 +105,6 @@ class DetailsScreenState extends State<DetailsScreen> {
     );
   }
 }
+
+
+ 

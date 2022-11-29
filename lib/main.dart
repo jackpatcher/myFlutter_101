@@ -1,399 +1,407 @@
-import 'package:device_preview/device_preview.dart';
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:a001/screen.dart';
-import 'package:a001/navBar.dart';
-import 'package:a001/model.dart';
- 
 
-// ต่อ https://github.com/jackpatcher/myFlutter_101/blob/my1stResponsive1/lib/sys/_left/b_menu_select.dart
+final GlobalKey<NavigatorState> _sectionANavigatorKey =
+GlobalKey<NavigatorState>(debugLabel: 'sectionANav');
+final GlobalKey<NavigatorState> _sectionBNavigatorKey =
+GlobalKey<NavigatorState>(debugLabel: 'sectionBNav');
 
-void main() =>
-    runApp(DevicePreview(enabled: false, builder: (contex) =>  A001App()));
+// This example demonstrates how to setup nested navigation using a
+// BottomNavigationBar, where each tab uses its own persistent navigator, i.e.
+// navigation state is maintained separately for each tab. This setup also
+// enables deep linking into nested pages.
+//
+// This example demonstrates how to display routes within a ShellRoute using a
+// `nestedNavigationBuilder`. Navigators for the tabs ('Section A' and
+// 'Section B') are created via nested ShellRoutes. Note that no navigator will
+// be created by the "top" ShellRoute. This example is similar to the ShellRoute
+// example, but differs in that it is able to maintain the navigation state of
+// each tab.
 
-class A001App extends StatelessWidget {
-   A001App({super.key});
+void main() {
+  runApp(NestedTabNavigationExampleApp());
+}
 
-    // private navigators
-  final _rootNavigatorKey = GlobalKey<NavigatorState>();
-  final _shellNavigatorKey = GlobalKey<NavigatorState>();
+/// An example demonstrating how to use nested navigators
+class NestedTabNavigationExampleApp extends StatelessWidget {
+  /// Creates a NestedTabNavigationExampleApp
+  NestedTabNavigationExampleApp({Key? key}) : super(key: key);
+
+  static final List<ScaffoldWithNavBarTabItem> _tabs =
+  <ScaffoldWithNavBarTabItem>[
+    ScaffoldWithNavBarTabItem(rootRoutePath: '/a',
+        navigatorKey: _sectionANavigatorKey,
+        icon: const Icon(Icons.home), label: 'Section A'),
+    ScaffoldWithNavBarTabItem(rootRoutePath: '/b',
+      navigatorKey: _sectionBNavigatorKey,
+      icon: const Icon(Icons.settings), label: 'Section B', ),
+  ];
+
+  final GoRouter _router = GoRouter(
+    initialLocation: '/a',
+    routes: <RouteBase>[
+      /// Custom top shell route - wraps the below routes in a scaffold with
+      /// a bottom tab navigator (ScaffoldWithNavBar). Note that no Navigator
+      /// will be created by this top ShellRoute.
+      BottomTabBarShellRoute(
+        tabs: _tabs,
+        routes: <RouteBase>[
+          /// The screen to display as the root in the first tab of the bottom
+          /// navigation bar.
+          GoRoute(
+            path: '/a',
+            builder: (BuildContext context, GoRouterState state) =>
+            const RootScreen(label: 'A', detailsPath: '/a/details'),
+            routes: <RouteBase>[
+              /// The details screen to display stacked on navigator of the
+              /// first tab. This will cover screen A but not the application
+              /// shell (bottom navigation bar).
+              GoRoute(
+                path: 'details',
+                builder: (BuildContext context, GoRouterState state) =>
+                  const DetailsScreen(label: 'A'),
+              ),
+            ],
+          ),
+          /// The screen to display as the root in the second tab of the bottom
+          /// navigation bar.
+          GoRoute(
+            path: '/b',
+            builder: (BuildContext context, GoRouterState state) =>
+            const RootScreen(label: 'B', detailsPath: '/b/details/1', detailsPath2: '/b/details/2'),
+            routes: <RouteBase>[
+              /// The details screen to display stacked on navigator of the
+              /// second tab. This will cover screen B but not the application
+              /// shell (bottom navigation bar).
+              GoRoute(
+                path: 'details/:param',
+                builder: (BuildContext context, GoRouterState state) =>
+                DetailsScreen(label: 'B', param: state.params['param']),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
- 
-
-    final goRouter = GoRouter(
-      initialLocation: '/a',
-      navigatorKey: _rootNavigatorKey,
-      debugLogDiagnostics: true,
-      routes: [
-        ShellRoute(
-          navigatorKey: _shellNavigatorKey,
-          builder: (context, state, child) {
-            return ScaffoldWithBottomNavBar(tabs: tabs, child: child);
-          },
-          routes: [
-            // Products
-            GoRoute(
-              path: '/a',
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const RootScreen(label: 'A', detailsPath: '/a/details'),
-              ),
-              routes: [
-                GoRoute(
-                  path: 'details',
-                  builder: (context, state) => const DetailsScreen(label: 'A'),
-                ),
-              ],
-            ),
-            // Shopping Cart
-            GoRoute(
-              path: '/b',
-              pageBuilder: (context, state) => NoTransitionPage(
-                key: state.pageKey,
-                child: const RootScreen(label: 'B', detailsPath: '/b/details'),
-              ),
-              routes: [
-                GoRoute(
-                  path: 'details',
-                  builder: (context, state) => const DetailsScreen(label: 'B'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    );
-
-    // return MaterialApp(
-    //   title: "A001 App",
-    //   debugShowCheckedModeBanner: false,
-    //   theme: ThemeData(
-    //     primarySwatch: Colors.blue,
-    //   ),
-    //   initialRoute: '/',
-    //   routes: {
-    //     '/':  (context) =>  HomeScreen( wg: const Page1() ),
-    //     Page1.id :  (context) => HomeScreen( wg: const Page1() ) ,
-    //     Page2.id:  (context) => HomeScreen( wg: const Page2() ) ,
-    //     Page3.id:  (context) => HomeScreen( wg: const Page3() ),
-    //     Page4.id:  (context) => HomeScreen( wg: const Page4() ) ,
-    //   },
-    // );
-
     return MaterialApp.router(
-      routerConfig: goRouter,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.indigo),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      routeInformationParser: _router.routeInformationParser,
+      routerDelegate: _router.routerDelegate,
+      routeInformationProvider: _router.routeInformationProvider,
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  Widget wg;
-
-    HomeScreen({
-    super.key,
-    required this.wg,
-    });
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
+/// ShellRoute that uses a bottom tab navigation (ScaffoldWithNavBar) with
+/// separate navigators for each tab.
+///
+/// NOTE: This is not an optimal implementation and should ideally be
+/// implemented in go_router, although in a way that doesn't use a navigator.
+/// Here is a proposed implementation:
+/// https://github.com/tolo/flutter_packages/tree/nested-persistent-navigation/packages/go_router
+class BottomTabBarShellRoute extends ShellRoute {
+  final List<ScaffoldWithNavBarTabItem> tabs;
+  BottomTabBarShellRoute({
+    required this.tabs,
+    GlobalKey<NavigatorState>? navigatorKey,
+    List<RouteBase> routes = const <RouteBase>[],
+    Key? scaffoldKey = const ValueKey('ScaffoldWithNavBar'),
+  }) : super(
+      navigatorKey: navigatorKey,
+      routes: routes,
+      builder: (context, state, Widget fauxNav) {
+        return Stack(children: [
+          // Needed to keep the (faux) shell navigator alive
+          Offstage(child: fauxNav),
+          ScaffoldWithNavBar(tabs: tabs, key: scaffoldKey,
+            currentNavigator: fauxNav as Navigator,
+            currentRouterState: state, routes: routes),
+        ]);
+      }
+  );
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-   
-   
-  
-// [SliverAppBar]s are typically used in [CustomScrollView.slivers], which in
-// turn can be placed in a [Scaffold.body].
+/// Representation of a tab item in a [ScaffoldWithNavBar]
+class ScaffoldWithNavBarTabItem extends BottomNavigationBarItem {
+  /// Constructs an [ScaffoldWithNavBarTabItem].
+  const ScaffoldWithNavBarTabItem({required this.rootRoutePath,
+    required this.navigatorKey, required Widget icon, String? label}) :
+        super(icon: icon, label: label);
 
-  //List<bool> isHilight = [false, false, false, false];
+  /// The initial location/path
+  final String rootRoutePath;
+
+  /// Optional navigatorKey
+  final GlobalKey<NavigatorState> navigatorKey;
+}
 
 
+/// Builds the "shell" for the app by building a Scaffold with a
+/// BottomNavigationBar, where [child] is placed in the body of the Scaffold.
+class ScaffoldWithNavBar extends StatefulWidget {
+  /// Constructs an [ScaffoldWithNavBar].
+  const ScaffoldWithNavBar({
+    required this.currentNavigator,
+    required this.currentRouterState,
+    required this.tabs,
+    required this.routes,
+    Key? key,
+  }) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
-  List <Widget> _pages = <Widget>[
-    const Page1(),
-    const Page2(),
-    const Page3(),
-     const Text('Index 3 : Home',style: TextStyle(fontSize: 30),),
-  ];
+  /// The navigator for the currently active tab
+  final Navigator currentNavigator;
 
-  Map<String, dynamic> myLocalList = {
-    "size": 0.0,
-    "isMobile": false,
-    "isTablet": false,
-    "isDesktop": false,
-    "sizeOf_Mobile": 600,
-    "sizeOf_Desktop": 1100,
-  };
-  int _selectedIndex = 0;
+  /// The pages for the current route
+  List<Page<dynamic>> get pagesForCurrentRoute => currentNavigator.pages;
+
+  /// The current router state
+  final GoRouterState currentRouterState;
+
+  /// The tabs
+  final List<ScaffoldWithNavBarTabItem> tabs;
+
+  // The routes
+  final List<RouteBase> routes;
+
+  @override
+  State<StatefulWidget> createState() => ScaffoldWithNavBarState();
+}
+
+/// State for ScaffoldWithNavBar
+class ScaffoldWithNavBarState extends State<ScaffoldWithNavBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+  late final List<_NavBarTabNavigator> _tabs;
+
+  //
+  int _locationToTabIndex(String location) {
+    final int index = _tabs.indexWhere(
+            (_NavBarTabNavigator t) => location.startsWith(t.rootRoutePath));
+    return index < 0 ? 0 : index;
+  }
+
+  int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
+    _tabs = widget.tabs
+        .map((ScaffoldWithNavBarTabItem e) => _NavBarTabNavigator(e))
+        .toList();
+
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 400));
+    _animationController.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant ScaffoldWithNavBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _updateForCurrentTab();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateForCurrentTab();
+  }
+
+  void _updateForCurrentTab() {
+    final int previousIndex = _currentIndex;
+    final location = GoRouter.of(context).location;
+    _currentIndex = _locationToTabIndex(location);
+
+    final _NavBarTabNavigator tabNav = _tabs[_currentIndex];
+    tabNav.pages = widget.pagesForCurrentRoute;
+    tabNav.lastLocation = location;
+
+    if (previousIndex != _currentIndex) {
+      _animationController.forward(from: 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //isHilight[_selectedIndex] = true;
+    return Scaffold(
+      body: _buildBody(context),
+      bottomNavigationBar: BottomNavigationBar(
+        items: _tabs
+            .map((_NavBarTabNavigator e) => e.bottomNavigationTab)
+            .toList(),
+        currentIndex: _currentIndex,
+        onTap: (int idx) => _onItemTapped(idx, context),
+      ),
+    );
+  }
 
-    myLocalList["size"] = MediaQuery.of(context).size.width;
+  Widget _buildBody(BuildContext context) {
+    return FadeTransition(
+        opacity: _animationController,
+        child: IndexedStack(
+            index: _currentIndex,
+            children: _tabs
+                .map((_NavBarTabNavigator tab) => tab.buildNavigator(context))
+                .toList()));
+  }
 
-    myLocalList["isMobile"] =
-        MediaQuery.of(context).size.width < myLocalList["sizeOf_Mobile"];
-    myLocalList["isTablet"] =
-        MediaQuery.of(context).size.width < myLocalList["sizeOf_Desktop"] &&
-            MediaQuery.of(context).size.width >= myLocalList["sizeOf_Mobile"];
-    myLocalList["isDesktop"] =
-        MediaQuery.of(context).size.width >= myLocalList["sizeOf_Desktop"];
+  void _onItemTapped(int index, BuildContext context) {
+    GoRouter.of(context).go(_tabs[index].currentLocation);
+  }
+}
 
-    //final isTablet = MediaQuery.of(context).size.shortestSide < 768;
+/// Class representing a tab along with its navigation logic
+class _NavBarTabNavigator {
+  _NavBarTabNavigator(this.bottomNavigationTab);
+
+  final ScaffoldWithNavBarTabItem bottomNavigationTab;
+
+  String? lastLocation;
+
+  String get currentLocation =>
+      lastLocation != null ? lastLocation! : rootRoutePath;
+
+  String get rootRoutePath => bottomNavigationTab.rootRoutePath;
+  Key? get navigatorKey => bottomNavigationTab.navigatorKey;
+  List<Page<dynamic>> pages = <Page<dynamic>>[];
+
+  Widget buildNavigator(BuildContext context) {
+    if (pages.isNotEmpty) {
+      return Navigator(
+        key: navigatorKey,
+        pages: pages,
+        onPopPage: (Route<dynamic> route, dynamic result) {
+          if (pages.length == 1 || !route.didPop(result)) {
+            return false;
+          }
+          GoRouter.of(context).pop();
+          return true;
+        },
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+}
+
+/// Widget for the root/initial pages in the bottom navigation bar.
+class RootScreen extends StatelessWidget {
+  /// Creates a RootScreen
+  const RootScreen({required this.label, required this.detailsPath,
+    this.detailsPath2, Key? key})
+      : super(key: key);
+
+  /// The label
+  final String label;
+
+  /// The path to the detail page
+  final String detailsPath;
+
+  /// The path to another detail page
+  final String? detailsPath2;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("โรงเรียน เดโม"),
-        actions: [
-          IconButton(icon: const Icon(Icons.person), onPressed: () {}),
-        ],
+        title: Text('Tab root - $label'),
       ),
-      body: _mainLayout(myLocalList ), 
-      bottomNavigationBar:   _genMobileBottomNav() ,
-    );
-  }
-
-  Widget _mainLayout(myLocalList ) {
-    return Row(children: [
-      _genNavLayoutByScreenSize(),
-      Expanded(child: _buildHomeContentBody( widget.wg)),
-    ]);
-  }
-
-  Widget _genNavLayoutByScreenSize() {
-    Widget myWidget = Container();
-    if (myLocalList["isTablet"]) {
-      myWidget = _buildTabletNavigationRail();
-    } else if (myLocalList["isDesktop"]) {
-      myWidget = _buildDesktopSideBar();
-    } else if (myLocalList["isMobile"]) {
-      myWidget = Container();
-    }
-
-    return myWidget;
-  }
-
-  Widget _buildDesktopSideBar() {
-    return Drawer(
-      width: 200,
-      child: ListView(
-        padding: const EdgeInsets.all(0.0),
-        children: _genNavSideBarList(),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text('Screen $label',
+                style: Theme.of(context).textTheme.titleLarge),
+            const Padding(padding: EdgeInsets.all(4)),
+            TextButton(
+              onPressed: () {
+                GoRouter.of(context).go(detailsPath);
+              },
+              child: const Text('View details'),
+            ),
+            const Padding(padding: EdgeInsets.all(4)),
+            if (detailsPath2 != null) TextButton(
+              onPressed: () {
+                GoRouter.of(context).go(detailsPath2!);
+              },
+              child: const Text('View more details'),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget _genMobileBottomNav() {
+/// The details screen for either the A or B screen.
+class DetailsScreen extends StatefulWidget {
+  /// Constructs a [DetailsScreen].
+  const DetailsScreen({
+    required this.label,
+    this.param,
+    Key? key,
+  }) : super(key: key);
 
-     List   <BottomNavigationBarItem> myList = [];
-      for (int index = 0; index < tabs.length; index++) {
-      myList.add( BottomNavigationBarItem (
-        icon:   _selectedIndex == index ? tabs[index].activeIcon : tabs[index].icon,
-        label: tabs[index].label,
-        backgroundColor:  tabs[index].color, 
-      )); 
-    }
-    return BottomNavigationBar(items: myList,
-            currentIndex: _selectedIndex,
-            onTap: (index) => changeTab(index),
-            
-            );
-  }
+  /// The label to display in the center of the screen.
+  final String label;
 
-  List<Widget> _genNavSideBarList() {
-    List<Widget> myList = [];
+  final String? param;
 
-    for (int index = 0; index < tabs.length; index++) {
-      myList.add(Container(
-        color:   Colors.white,
-        child: ListTile(
-          leading: _selectedIndex == index ? tabs[index].activeIcon : tabs[index].icon,
-          title: Text(tabs[index].label),
-          selected: _selectedIndex == index,
-          selectedColor: Colors.blue,
-          onTap: () {
-            
-            debugPrint("Tab $index");
-            
-            setState(() {
-              _selectedIndex = index;
-            });
+  @override
+  State<StatefulWidget> createState() => DetailsScreenState();
+}
 
-          },
-        ),
-      ));
-    }
+/// The state for DetailsScreen
+class DetailsScreenState extends State<DetailsScreen> {
+  int _counter = 0;
 
-    myList.add(const Divider());
-
-    return myList;
-  }
-
-  //https://stackoverflow.com/questions/50961158/how-to-programmatically-select-bottomnavigationbar-tab-in-flutter-instead-of-bui
-  void changeTab(int index) {
-    Navigator.of(context).pushReplacementNamed(tabs[index].route);
-
-    // Navigator.pushNamed(context, tabs[index].route);
-     //Navigator.pushNamed(context,tabs[index].route);
-     //Navigator.pushReplacement(context,MaterialPageRoute(builder: (BuildContext context) => Page1()));
-    
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
- 
- Widget sampleContent(){
-  return CustomScrollView(
-      slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 20,
-            child: Center(
-              child: Text(' ความกว้าง ${myLocalList['size']}'),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Details Screen - ${widget.label}'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            if (widget.param != null)
+              Text('Parameter: ${widget.param!}',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleLarge),
+            const Padding(padding: EdgeInsets.all(4)),
+            Text('Details for ${widget.label} - Counter: $_counter',
+                style: Theme.of(context).textTheme.titleLarge),
+            const Padding(padding: EdgeInsets.all(4)),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _counter++;
+                });
+              },
+              child: const Text('Increment counter'),
             ),
-          ),
+          ],
         ),
-        SliverToBoxAdapter(
-          child: SizedBox(
-            height: 20,
-            child: Center(
-              child: Text(
-                  ' Mobile: ${myLocalList['isMobile']} Tablet:${myLocalList['isTablet']} Desktop : ${myLocalList['isDesktop']}'),
-            ),
-          ),
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return Container(
-                color: index.isOdd ? Colors.white : Colors.black12,
-                height: 50,
-                child: Center(
-                  child: Text('$index', textScaleFactor: 1),
-                ),
-              );
-            },
-            childCount: 50,
-          ),
-        ),
-      ],
+      ),
     );
- }
-
- 
-
-
-Widget _buildHomeContentBody(contentWidget) {
-    return contentWidget;
-}
-
-
-  Widget _buildTabletNavigationRail() {
-    var groupAligment = -1.0;
-    var labelType = NavigationRailLabelType.selected;
- 
-
-    return NavigationRail(
-      selectedIndex: _selectedIndex,
-      groupAlignment: groupAligment,
-      onDestinationSelected: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-
-      },
-      labelType: labelType,
-      leading: const SizedBox(),
-      trailing: const SizedBox(),
-      destinations: List<NavigationRailDestination>.generate(
-          tabs.length,(index) => NavigationRailDestination(
-                icon: Tooltip(
-                  message: tabs[index].label,
-                  child: tabs[index].icon,
-                ),
-                label: Text(tabs[index].label),
-                selectedIcon: tabs[index].activeIcon,
-  
-              )),
-    );
-  }
-}
-
-
-
-
-class Page1 extends StatelessWidget {
-  const Page1({super.key});
-
-  static String id = "/page1";
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("page 1"),
-        ),
-        body: const Text("page 1"));
-  }
-}
-
-class Page2 extends StatelessWidget {
-  const Page2({super.key});
-
-  static String id = "/page2";
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("page 2"),
-        ),
-        body: const Text("page 2"));
-  }
-}
-
-class Page3 extends StatelessWidget {
-  const Page3({super.key});
-  static String id = "/page3";
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("page 3"),
-        ),
-        body: const Text("page 3"));
-  }
-}
-
-class Page4 extends StatelessWidget {
-  const Page4({super.key});
-  static String id = "/page4";
-
-  
-
-
-
-  @override
-  Widget build(BuildContext context) {
-      //  setState(() {
-      //      _selectedIndex = 4;
-      //   });
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("page 4"),
-        ),
-        body: const Text("page 4"));
   }
 }
