@@ -21,7 +21,7 @@ https://github.com/tomgilder/routemaster/blob/main/example/navigation_bar/lib/ma
 ## git init
 ## git add .
 ## git commit -m "firstInit"  
-## git branch -M my3route_routerMaster
-## git remote add nov292022 https://github.com/jackpatcher/myFlutter_101.git
-## git push -u nov292022  my3route_routerMaster
+## git branch -M my1HomeScreen
+## git remote add nov302022 https://github.com/jackpatcher/myFlutter_101.git
+## git push -u nov302022  my1HomeScreen
 
