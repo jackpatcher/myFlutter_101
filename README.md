@@ -22,6 +22,5 @@ https://github.com/tomgilder/routemaster/blob/main/example/navigation_bar/lib/ma
 ## git add .
 ## git commit -m "gesturesCardScrollable"  
 ## git branch -M my1HomeScreen
-## git remote add dec01v52022 https://github.com/jackpatcher/myFlutter_101.git
-## git push -u dec01v52022  my1HomeScreen
-
+## git remote add dec01v62022 https://github.com/jackpatcher/myFlutter_101.git
+## git push -u dec01v62022  my1HomeScreen
