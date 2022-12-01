@@ -1,4 +1,4 @@
-# auto_route
+# routeMaster
 
 A new Flutter project.
 
@@ -20,8 +20,8 @@ https://github.com/tomgilder/routemaster/blob/main/example/navigation_bar/lib/ma
 
 ## git init
 ## git add .
-## git commit -m "firstInit"  
+## git commit -m "gesturesCardScrollable"  
 ## git branch -M my1HomeScreen
-## git remote add nov302022 https://github.com/jackpatcher/myFlutter_101.git
-## git push -u nov302022  my1HomeScreen
+## git remote add dec01v52022 https://github.com/jackpatcher/myFlutter_101.git
+## git push -u dec01v52022  my1HomeScreen
 
