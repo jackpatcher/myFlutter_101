@@ -1,5 +1,5 @@
-export 'page1.dart';
-export 'page2.dart';
-export 'page3.dart';
-export 'page4.dart';
+export 'p1.dart';
+export 'p2.dart';
+export 'p3.dart';
+export 'p4.dart';
 export 'otherPages.dart';

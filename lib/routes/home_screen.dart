@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [ IconButton(icon: const Icon(Icons.person), onPressed: () {}),],
       ),
       body: _mainLayout(),
-      bottomNavigationBar: _genMobileBottomNav(),
+      bottomNavigationBar: myHome["isMobile"]? _genMobileBottomNav():null,
     );
   }
 
