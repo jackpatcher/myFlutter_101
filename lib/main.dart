@@ -1,6 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
- 
+
 import 'routes/inc_route.dart';
 
 void main() {
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: "myApp",
       debugShowCheckedModeBanner: false,
+      scrollBehavior: MyCustomScrollBehavior(),
       routerDelegate: RoutemasterDelegate(
         routesBuilder: (context) => RouteMap(
           routes: mainRoute,
@@ -25,3 +27,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  // Override behavior methods and getters like dragDevices
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}
