@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:my_routemaster/pages/theme.dart';
 import 'package:routemaster/routemaster.dart';
-import 'nav_menu_route.dart';
- 
+import 'menu_nav_route.dart';
 
-class HomeScreen extends StatefulWidget {
-   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
- 
-      Map<String, dynamic> myHome = {
+Map<String, dynamic> myHome = {
       "size": 0.0,
       "isMobile": false,
       "isTablet": false,
       "isDesktop": false,
       "sizeOf_Mobile": 600,
       "sizeOf_Desktop": 1100,
-    };
+};
+
+class MainLayout extends StatefulWidget {
+   const MainLayout({super.key});
+
+  @override
+  State<MainLayout> createState() => _MainLayoutState();
+}
+
+
+
+class _MainLayoutState extends State<MainLayout> {
+ 
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
        
      // bottomNavigationBar: _genOldBtmNav(indexedPage),
       appBar: AppBar(
-        title: const Text("โรงเรียน เดโม"),
+        title: Text(AppConst.appName),
         actions: [ IconButton(icon: const Icon(Icons.person), onPressed: () {}),],
       ),
       body: _mainLayout(),

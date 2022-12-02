@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:my_routemaster/pages/inc_a01.dart';
 import 'package:routemaster/routemaster.dart';
 
 import 'routes/inc_route.dart';
@@ -14,7 +15,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: "myApp",
+      title: AppConst.appName,
+      theme: AppTheme.initTheme,
       debugShowCheckedModeBanner: false,
       scrollBehavior: MyCustomScrollBehavior(),
       routerDelegate: RoutemasterDelegate(

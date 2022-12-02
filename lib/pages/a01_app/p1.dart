@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import '../theme.dart';
 
-const kFontColorPallets = [
-  Color.fromRGBO(26, 31, 56, 1),
-  Color.fromRGBO(72, 76, 99, 1),
-  Color.fromRGBO(149, 149, 163, 1),
-];
-const kBorderRadius = 10.0;
-const kSpacing = 15.0;
+
 
 class Page1 extends StatefulWidget {
   final String title;
@@ -27,12 +22,16 @@ class _Page1State extends State<Page1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Page1"),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(30.0), // here the desired height
+          child: AppBar (
+            elevation: 1,
+        backgroundColor: Colors.yellow.shade50,
+        title: Text(widget.title,style: AppTheme.initTheme.textTheme.headline2,),
         actions: [
           IconButton(icon: const Icon(Icons.person), onPressed: () {}),
         ],
-      ),
+      )),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -70,7 +69,7 @@ class _Page1State extends State<Page1> {
           itemCount: cards.length,
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: kSpacing / 2),
-            child: buildCards(cards[index], index, _getSequenceColor(index)),
+            child: buildCards(cards[index], index,  getSequenceColor(index)),
           ),
         ),
       ),
@@ -225,25 +224,25 @@ class P1CardsData {
 
 List<P1CardsData> getCards() => const [
       P1CardsData(
-        label: "นักเรียน",
+        label: "นักเรียนที่สมัคร",
         numberRegist: 1050,
         total: 1500,
         icon: Icons.person,
       ),
       P1CardsData(
-        label: "บุคลากร",
+        label: "จำนวนคอร์ส",
         numberRegist: 20,
         total: 56,
         icon: Icons.supervisor_account,
       ),
       P1CardsData(
-        label: "ผู้ปกครอง",
-        numberRegist: 55,
+        label: "การส่งงาน",
+        numberRegist: 200,
         total: 1500,
         icon: Icons.escalator_warning,
       ),
       P1CardsData(
-        label: "ผู้ดูแลระบบ",
+        label: "เรียนย้อนหลังแล้ว",
         numberRegist: 20,
         total: 26,
         icon: Icons.lock_person,
@@ -285,16 +284,3 @@ class BackgroundDecoration extends StatelessWidget {
   }
 }
 
-Color _getSequenceColor(int index) {
-  List<Color> colors = const [
-    Colors.lightBlue,
-    Colors.redAccent,
-    Color.fromARGB(255, 242, 158, 47),
-    Color.fromARGB(255, 111, 35, 243),
-    Color.fromARGB(255, 15, 209, 115),
-  ];
-
-  int val = index % 5;
-
-  return colors[val];
-}
