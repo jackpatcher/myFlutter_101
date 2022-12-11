@@ -53,6 +53,7 @@ class _StdCrudAppState extends State<StdCrudApp> {
     super.initState();
 
     _getStd();
+    print("a");
   }
 
   @override

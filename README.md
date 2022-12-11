@@ -16,9 +16,10 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 ### echo "lib/secret/*" > .gitignore
+
 ### git init 
 ### git add .
-### git commit -m "ดึงข้อูลstdได้แล้วเย้2"
+### git commit -m "add const"
 ### git branch -M flutterApi2  
-### git remote add oct642022 https://github.com/jackpatcher/myFlutter_101.git
-### git push -u oct642022 flutterApi2    
+### git remote add dec11v12022 https://github.com/jackpatcher/myFlutter_101.git
+### git push -u dec11v12022 flutterApi2    

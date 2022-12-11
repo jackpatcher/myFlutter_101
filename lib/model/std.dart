@@ -1,14 +1,14 @@
 class Std {
-  String userRegId;
-  String stdId;
-  String startName;
-  String firstName;
-  String lastName;
-  String stdNo;
-  String classLv;
-  String room;
-  String imgUrl;
-  String tel;
+  String? userRegId;
+  String? stdId;
+  String? startName;
+  String? firstName;
+  String? lastName;
+  int? stdNo;
+  String? classLv;
+  int? room;
+  String? imgUrl;
+  String? tel;
   
  
   Std.fromJsonMap(Map<String, dynamic> map)
